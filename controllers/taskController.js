@@ -9,18 +9,20 @@ class TaskController {
     }
     
     async getOneTask(req, res) {
-        
+        const taskId = req.params['id'];
+        const tasks = await db.query(`
+        SELECT * FROM tasksTable WHERE id=$1;`, [taskId]);
+        res.json(tasks.rows[0]);
     }
 
     async createTask(req, res) {
         const taskName = req.body['taskName'];
         const done = req.body['done'];
-        console.log(req.body);
-        console.log(taskName, done);
+
         const newTask = await db.query(`
         INSERT INTO tasksTable (taskName, done) VALUES ($1, $2) RETURNING *`, [taskName, done]);
         // res.json(newTask.rows[0]);
-        res.json('Done!');
+        res.json();
     }
 
     async deleteTask(req, res) {
