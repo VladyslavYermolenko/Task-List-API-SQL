@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('../database/db');
 
 class TaskController {
-    async getAllTasks(req, res) {
+    async getAllTasks(_, res) {
         const tasks = await db.query(`
         SELECT * FROM tasksTable;`);
         res.json(tasks.rows)
