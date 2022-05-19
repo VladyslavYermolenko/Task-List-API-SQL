@@ -1,8 +1,11 @@
+const express = require('express');
 const db = require('../database/db');
 
 class TaskController {
     async getAllTasks(req, res) {
-        
+        const tasks = await db.query(`
+        SELECT * FROM tasksTable;`);
+        res.json(tasks.rows)
     }
     
     async getOneTask(req, res) {
@@ -10,10 +13,14 @@ class TaskController {
     }
 
     async createTask(req, res) {
-        const {task, done} = req.body;
+        const taskName = req.body['taskName'];
+        const done = req.body['done'];
+        console.log(req.body);
+        console.log(taskName, done);
         const newTask = await db.query(`
-        INSERT INTO tasksTable (task, done) VALUE ($1, $2) RETURNING *`, [task, done]);
-        res.json('ok');
+        INSERT INTO tasksTable (taskName, done) VALUES ($1, $2) RETURNING *`, [taskName, done]);
+        // res.json(newTask.rows[0]);
+        res.json('Done!');
     }
 
     async deleteTask(req, res) {

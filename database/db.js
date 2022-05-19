@@ -7,4 +7,6 @@ const client = new Client({
     database: 'tasklists'
 });
 
+client.connect();
+
 module.exports = client;
