@@ -1,40 +1,28 @@
-const express = require('express');
-const db = require('../database/db');
+const Task = require('../models/taskModel')
 
 class TaskController {
-    async getAllTasks(_, res) {
-        const tasks = await db.query(`
-        SELECT * FROM tasksTable;`);
-        res.json(tasks.rows)
+    getAllTasks() {
+        return Task.getAllTasks();
     }
     
-    async getOneTask(req, res) {
-        const taskId = req.params['id'];
-        const tasks = await db.query(`
-        SELECT * FROM tasksTable WHERE id=$1;`, [taskId]);
-        res.json(tasks.rows[0]);
+    getOneTask(taskId) {
+        return Task.getOneTask(taskId);
     }
 
-    async createTask(req, res) {
-        const taskName = req.body['taskName'];
-        const done = req.body['done'];
-
-        const newTask = await db.query(`
-        INSERT INTO tasksTable (taskName, done) VALUES ($1, $2) RETURNING *`, [taskName, done]);
-        // res.json(newTask.rows[0]);
-        res.json();
+    createTask(taskName, done) {
+        return Task.createTask(taskName, done);
     }
 
-    async deleteTask(req, res) {
-        
+    deleteTask(taskId) {
+        return Task.deleteTask(taskId);
     }
 
-    async putTask(req, res) {
-        
+    putTask(id, taskName, done) {
+        return Task.putTask(id, taskName, done);
     }
 
-    async patchTask(req, res) {
-        
+    patchTask(id, taskName, done) {
+        return Task.patchTask(id, taskName, done);
     }
 }
 
