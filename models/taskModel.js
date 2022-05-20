@@ -26,8 +26,8 @@ async function createTask(taskName, done) {
 }
 
 async function deleteTask(taskId) {
-    const newTasks = await db.query(
-        `SELECT * FROM tasksTable WHERE id = $1`,
+    await db.query(
+        `DELETE FROM tasksTable WHERE id = $1`,
         [taskId]
     );
     return true;

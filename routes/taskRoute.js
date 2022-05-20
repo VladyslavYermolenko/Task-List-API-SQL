@@ -20,12 +20,18 @@ router.get('/', async (_, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        const task = await controller.getOneTask(req.params['id']);
-        if (task) {
-            res.status(200).json(task);
+        const taskId = req.params['id'];
+        if (taskId) {
+            const task = await controller.getOneTask(taskId);
+            if (task) {
+                res.status(200).json(task);
+            }
+            else {
+                res.status(404).json('Task not found!');
+            }
         }
         else {
-            res.status(404).json('Task not found!');
+            res.status(404).json('Incorrect ID task input!');
         }
     }
     catch (error) {
