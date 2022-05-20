@@ -3,17 +3,35 @@ const router = express.Router();
 const controller = require('../controllers/taskController');
 
 router.get('/', async (_, res) => {
-    const tasks = controller.getAllTasks();
-    res.status(200).json(tasks);
+    try {
+        const tasks = controller.getAllTasks();
+        if (tasks) {
+            res.status(200).json(tasks);
+        }
+        else {
+            res.status(200).json('At the moment there are no tasks...');
+        }
+    }
+    catch (error) {
+        res.status(404).json('Not found!');
+        console.log(error);
+    }
 });
 
 router.get('/:id', async (req, res) => {
-    const taskId = req.params['id'];
-    const tasks = await db.query(
-        `SELECT * FROM tasksTable WHERE id=$1;`, 
-        [taskId]
-    );
-    res.json(tasks.rows[0]);
+    try {
+        const task = controller.getOneTask(req.params['id']);
+        if (task) {
+            res.status(200).json(task);
+        }
+        else {
+            res.status(404).json('Task not found!');
+        }
+    }
+    catch (error) {
+        res.status(404).json('Not found!');
+        console.log(error);
+    }
 });
 
 router.post('/', async (req, res) => {
