@@ -49,15 +49,18 @@ async function putTask(id, taskName, done) {
 }
 
 async function patchTask(id, taskName, done) {
-    const curTask = await db.query(
-        `SELECT * FROM tasksTable WHERE id=$1`,
-        [id]
-    );
-    const newTask = await db.query(
-        `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`,
-        [id, taskName || curTask['taskName'], done || curTask['done']]
-    );
-    return newTask.rows[0];
+    const curTask = await getOneTask(id);
+    if (curTask) {
+        await db.query(
+            `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`,
+            [id, taskName || curTask['taskName'], done ?? curTask['done']]
+        );
+        const newTask = await getOneTask(id);
+        return newTask;
+    }
+    else {
+        return undefined;
+    }
 }
 
 module.exports = {
