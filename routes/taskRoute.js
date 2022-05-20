@@ -9,11 +9,11 @@ router.get('/', async (_, res) => {
             res.status(200).json(tasks);
         }
         else {
-            res.status(200).json('At the moment there are no tasks...');
+            res.status(204).send('At the moment there are no tasks...');
         }
     }
     catch (error) {
-        res.status(404).json('Not found!');
+        res.status(404).send('Not found!');
         console.log(error);
     }
 });
@@ -27,15 +27,15 @@ router.get('/:id', async (req, res) => {
                 res.status(200).json(task);
             }
             else {
-                res.status(404).json('Task not found!');
+                res.status(404).send('Task not found!');
             }
         }
         else {
-            res.status(404).json('Incorrect ID task input!');
+            res.status(404).send('Incorrect ID task input!');
         }
     }
     catch (error) {
-        res.status(404).json('Not found!');
+        res.status(404).send('Not found!');
         console.log(error);
     }
 });
@@ -46,33 +46,46 @@ router.post('/', async (req, res) => {
         if (taskName) {
             const newTask = await controller.createTask(taskName, done);
             if (newTask) {
-                res.status(200).json(newTask);
+                res.status(201).json(newTask);
             }
             else {
-                res.status(404).json('Failed to send request.');
+                res.status(404).send('Failed to send request.');
             }
         }
         else {
-            res.status(404).json('The body is incorrect.');
+            res.status(404).send('The body is incorrect.');
         }
     }
     catch (error) {
-        res.status(404).json('Not found!');
+        res.status(404).send('Not found!');
         console.log(error);
     }
 });
 
 router.delete('/:id', async (req, res) => {
-    
+    try {
+        const taskId = req.params['id'];
+        if (taskId) {
+            const isDeleteTask = await controller.deleteTask(taskId);
+            if (isDeleteTask) {
+                res.status(204).send();
+            }
+            else {
+                res.status(404).send('Failed to remove item from database.');
+            }
+        }
+        else {
+            res.status(404).send('The body is incorrect.');
+        }
+    }
+    catch (error) {
+        res.status(404).send('Not found!');
+        console.log(error);
+    }
 });
 
 router.put('/', async (req, res) => {
     const {id, taskName, done} = req.body;
-    const newTask = await db.query(
-        `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`
-        [id, taskName, done]
-    );
-    res.json()
 });
 
 router.patch('/', async (req, res) => {
