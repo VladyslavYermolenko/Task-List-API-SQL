@@ -65,17 +65,12 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const taskId = req.params['id'];
-        if (taskId) {
-            const isDeleteTask = await controller.deleteTask(taskId);
-            if (isDeleteTask) {
-                res.status(204).send();
-            }
-            else {
-                res.status(404).send('Failed to remove item from database.');
-            }
+        const isDeleteTask = await controller.deleteTask(taskId);
+        if (isDeleteTask) {
+            res.status(204).send();
         }
         else {
-            res.status(404).send('The body is incorrect.');
+            res.status(404).send('Failed to remove item from database.');
         }
     }
     catch (error) {
@@ -86,6 +81,13 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/', async (req, res) => {
     const {id, taskName, done} = req.body;
+    const newTask = controller.putTask(id, taskName, done);
+    if (newTask) {
+        res.status(200).json(newTask);
+    }
+    else {
+        res.status(404).json('Failed to change item from database.');
+    }
 });
 
 router.patch('/', async (req, res) => {
