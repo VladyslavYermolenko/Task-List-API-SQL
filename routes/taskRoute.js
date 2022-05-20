@@ -4,7 +4,7 @@ const controller = require('../controllers/taskController');
 
 router.get('/', async (_, res) => {
     try {
-        const tasks = controller.getAllTasks();
+        const tasks = await controller.getAllTasks();
         if (tasks) {
             res.status(200).json(tasks);
         }
@@ -20,7 +20,7 @@ router.get('/', async (_, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        const task = controller.getOneTask(req.params['id']);
+        const task = await controller.getOneTask(req.params['id']);
         if (task) {
             res.status(200).json(task);
         }
@@ -35,17 +35,28 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const {taskName, done} = req.body;
-
-    const newTask = await db.query(
-        `INSERT INTO tasksTable (taskName, done) VALUES ($1, $2) RETURNING *;`,
-        [taskName, done]
-    );
-    // res.json(newTask.rows[0]);
-    res.json();
+    try {
+        const { taskName, done } = req.body;
+        if (taskName) {
+            const newTask = await controller.createTask(taskName, done);
+            if (newTask) {
+                res.status(200).json(newTask);
+            }
+            else {
+                res.status(404).json('Failed to send request.');
+            }
+        }
+        else {
+            res.status(404).json('The body is incorrect.');
+        }
+    }
+    catch (error) {
+        res.status(404).json('Not found!');
+        console.log(error);
+    }
 });
 
-router.delete('/:id', await (req, res) => {
+router.delete('/:id', async (req, res) => {
     
 });
 

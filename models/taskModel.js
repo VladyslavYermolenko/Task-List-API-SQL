@@ -19,7 +19,7 @@ async function getOneTask(taskId) {
 async function createTask(taskName, done) {
     const newTask = await db.query(
         `INSERT INTO tasksTable (taskName, done) VALUES ($1, $2) RETURNING *;`,
-        [taskName, done]
+        [taskName, done || false]
     );
     // res.json(newTask.rows[0]);
     return newTask.rows[0];
@@ -30,6 +30,7 @@ async function deleteTask(taskId) {
         `SELECT * FROM tasksTable WHERE id = $1`,
         [taskId]
     );
+    return true;
 }
 
 async function putTask(id, taskName, done) {
