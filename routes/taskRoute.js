@@ -79,9 +79,10 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.put('/', async (req, res) => {
-    const {id, taskName, done} = req.body;
-    const newTask = controller.putTask(id, taskName, done);
+router.put('/:id', async (req, res) => {
+    const taskId = req.params['id'];
+    const {taskName, done} = req.body;
+    const newTask = await controller.putTask(taskId, taskName, done);
     if (newTask) {
         res.status(200).json(newTask);
     }

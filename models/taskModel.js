@@ -34,11 +34,18 @@ async function deleteTask(taskId) {
 }
 
 async function putTask(id, taskName, done) {
-    const newTask = await db.query(
-        `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`
-        [id, taskName, done]
-    );
-    return newTask.rows[0];
+    const taskIsExists = await getOneTask(id);
+    if (taskIsExists) {
+        await db.query(
+            `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`,
+            [id, taskName || null, done || false]
+        );
+        const newTask = await getOneTask(id);
+        return newTask;
+    }
+    else {
+        return undefined;
+    }
 }
 
 async function patchTask(id, taskName, done) {
@@ -47,7 +54,7 @@ async function patchTask(id, taskName, done) {
         [id]
     );
     const newTask = await db.query(
-        `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`
+        `UPDATE tasksTable SET taskName=$2, done=$3 WHERE id=$1 RETURNING *;`,
         [id, taskName || curTask['taskName'], done || curTask['done']]
     );
     return newTask.rows[0];
